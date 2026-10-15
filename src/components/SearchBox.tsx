@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { searchCity, type CityResult } from "../lib/weather";
 
-// shohor search korar box — type korlei suggestion ashe
+// City search box — suggestions appear as you type
 export default function SearchBox() {
   const [q, setQ] = useState("");
   const [hits, setHits] = useState<CityResult[]>([]);
@@ -12,7 +12,7 @@ export default function SearchBox() {
   const router = useRouter();
   const boxRef = useRef<HTMLDivElement>(null);
 
-  // type korar 400ms pore search hit kora (protibar na)
+  // Search 400ms after typing stops (not on every keystroke)
   useEffect(() => {
     if (q.trim().length < 2) {
       setHits([]);
@@ -26,7 +26,7 @@ export default function SearchBox() {
     return () => clearTimeout(t);
   }, [q]);
 
-  // bairer click e dropdown bondho
+  // Close dropdown on outside click
   useEffect(() => {
     const close = (e: MouseEvent) => {
       if (boxRef.current && !boxRef.current.contains(e.target as Node)) {
@@ -37,7 +37,7 @@ export default function SearchBox() {
     return () => document.removeEventListener("mousedown", close);
   }, []);
 
-  // shohor select korle oi shohorer weather dekhano
+  // Show weather for the selected city
   const pick = (c: CityResult) => {
     setOpen(false);
     setQ("");

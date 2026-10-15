@@ -1,5 +1,5 @@
-// Open-Meteo API niye kaj korar helper gula
-// API key lage na, free — tai ekhanei direct call korchi
+// Helpers for the Open-Meteo API
+// No API key needed, so we call it directly
 
 export type CurrentWeather = {
   temperature: number;
@@ -31,7 +31,7 @@ export type CityResult = {
   longitude: number;
 };
 
-// WMO weather code -> manush porte pare emon kotha
+// WMO weather code -> human-readable label
 export function describe(code: number): string {
   if (code === 0) return "Clear sky";
   if (code === 1) return "Mostly clear";
@@ -46,7 +46,7 @@ export function describe(code: number): string {
   return "Cloudy";
 }
 
-// weather code onujayi chhoto icon
+// Small icon per weather code
 export function iconFor(code: number, isDay: boolean): string {
   if (code === 0) return isDay ? "☀️" : "🌙";
   if (code === 1 || code === 2) return isDay ? "⛅" : "☁️";
@@ -59,20 +59,20 @@ export function iconFor(code: number, isDay: boolean): string {
   return "☁️";
 }
 
-// abohar obostha + din/rat onujayi akasher rong
-// puro page er background eita diyei banano
+// Sky gradient based on conditions and time of day
+// Used for the full-page background
 export function skyFor(code: number, isDay: boolean): string {
-  if (!isDay) return "from-[#0a0f24] via-[#182154] to-[#2e3d75]"; // rat
-  if (code === 0 || code === 1) return "from-[#2f7fc4] via-[#5aa9e6] to-[#a5d8f7]"; // jhokjhoke rod
-  if (code === 2) return "from-[#3d84b8] via-[#74aede] to-[#c3ddf0]"; // halka megh
+  if (!isDay) return "from-[#0a0f24] via-[#182154] to-[#2e3d75]"; // night
+  if (code === 0 || code === 1) return "from-[#2f7fc4] via-[#5aa9e6] to-[#a5d8f7]"; // bright sun
+  if (code === 2) return "from-[#3d84b8] via-[#74aede] to-[#c3ddf0]"; // light clouds
   if (code === 3 || code === 45 || code === 48)
-    return "from-[#55677e] via-[#7d8fa3] to-[#aeb9c6]"; // meghla / kuasha
-  if (code >= 51 && code <= 82) return "from-[#37475e] via-[#4e6076] to-[#75859a]"; // brishti
-  if (code >= 95) return "from-[#232838] via-[#39415c] to-[#59637e]"; // jhor
+    return "from-[#55677e] via-[#7d8fa3] to-[#aeb9c6]"; // overcast / fog
+  if (code >= 51 && code <= 82) return "from-[#37475e] via-[#4e6076] to-[#75859a]"; // rain
+  if (code >= 95) return "from-[#232838] via-[#39415c] to-[#59637e]"; // storm
   return "from-[#3d84b8] via-[#74aede] to-[#c3ddf0]";
 }
 
-// date string theke "Mon", "Tue" ber kora
+// "Mon", "Tue" from a date string
 export function weekday(dateStr: string): string {
   const d = new Date(dateStr + "T12:00:00");
   return d.toLocaleDateString("en-US", { weekday: "short" });
@@ -80,7 +80,7 @@ export function weekday(dateStr: string): string {
 
 const BASE = "https://api.open-meteo.com/v1/forecast";
 
-// latitude/longitude diye weather ana
+// Fetch weather by latitude/longitude
 export async function getWeather(lat: number, lon: number): Promise<WeatherData> {
   const url =
     `${BASE}?latitude=${lat}&longitude=${lon}` +
@@ -88,7 +88,7 @@ export async function getWeather(lat: number, lon: number): Promise<WeatherData>
     `&daily=weather_code,temperature_2m_max,temperature_2m_min` +
     `&timezone=auto&forecast_days=6`;
 
-  // 10 min por por notun data (ISR)
+  // Fresh data every 10 min (ISR)
   const res = await fetch(url, { next: { revalidate: 600 } });
   if (!res.ok) throw new Error("Weather ante problem hoise");
 
@@ -116,7 +116,7 @@ export async function getWeather(lat: number, lon: number): Promise<WeatherData>
   };
 }
 
-// nam diye shohor khunja (search er jonno)
+// Find a city by name (for search)
 export async function searchCity(q: string): Promise<CityResult[]> {
   if (q.trim().length < 2) return [];
   const res = await fetch(

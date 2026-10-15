@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description: "Live weather for any city, powered by Open-Meteo",
 };
 
-// default shohor: Dhaka
+// Default city: Dhaka
 const DHAKA = { lat: 23.8103, lon: 90.4125, name: "Dhaka" };
 
 type Props = {
@@ -20,12 +20,12 @@ export default async function Page({ searchParams }: Props) {
   const lon = sp.lon ? Number(sp.lon) : DHAKA.lon;
   const cityName = sp.name ?? DHAKA.name;
 
-  // server thekei weather ana — page load e ready thake
+  // Fetch weather on the server — ready at page load
   const w = await getWeather(lat, lon);
   const c = w.current;
   const sky = skyFor(c.weatherCode, c.isDay);
 
-  // ajker ta bad diye porer 5 din
+  // Skip today, show the next 5 days
   const coming = w.daily.slice(1, 6);
 
   return (
@@ -93,7 +93,7 @@ export default async function Page({ searchParams }: Props) {
   );
 }
 
-// ekta chhoto info card
+// Small info card
 function Detail({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-2xl bg-white/15 px-4 py-3 backdrop-blur-md">

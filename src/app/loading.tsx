@@ -1,4 +1,4 @@
-// data ashte joto khon lage, totokhon eita dekhabe
+// Shown while the data loads
 export default function Loading() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-gradient-to-b from-[#3d84b8] to-[#c3ddf0]">
