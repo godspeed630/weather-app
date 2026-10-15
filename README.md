@@ -1,6 +1,6 @@
 # Weather — Ajker Akash
 
-**Live demo:** https://weather-503o4687e-godspeed630.vercel.app
+**Live demo:** https://weather-app-nine-red-79.vercel.app
 
 A small weather dashboard built with **Next.js 15**, **React 19**, **TypeScript**, and **Tailwind CSS**. Search any city and see live weather with a sky that changes with the actual conditions — data from [Open-Meteo](https://open-meteo.com) (free, no API key needed).
 
